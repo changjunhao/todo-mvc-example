@@ -193,7 +193,7 @@ export default {
     );
     // lifecycle
     onMounted(() => {
-      console.log('mounted');
+      // console.log('mounted');
     });
     // expose bindings on render context
     return {

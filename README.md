@@ -1,4 +1,4 @@
-# composition-api
+# 基于 composition-api@0.4.0 构建的 Todo App
 
 ## Project setup
 ```
@@ -20,5 +20,5 @@ npm run build
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Doc
+See [vue-composition-api](https://vue-composition-api-rfc.netlify.com/).
