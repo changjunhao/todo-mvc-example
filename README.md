@@ -27,4 +27,4 @@ npm run lint
 ```
 
 ### Doc
-See [vue-composition-api](https://vue-composition-api-rfc.netlify.com/).
+See [vue-next](https://github.com/vuejs/vue-next).
