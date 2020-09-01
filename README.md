@@ -1,4 +1,4 @@
-# 基于 composition-api@0.4.0 构建的 Todo App
+# 基于 composition-api@0.6.7 构建的 Todo App
 
 ## Demo
 See [todos](http://project.ifable.cn/todos).
