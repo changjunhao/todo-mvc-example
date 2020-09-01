@@ -16,7 +16,7 @@
           <li v-for="todo in filteredTodos"
               class="todo"
               :key="todo.id"
-              :class="{ completed: todo.completed, editing: todo == editedTodo }">
+              :class="{ completed: todo.completed, editing: todo === editedTodo }">
             <div class="view">
               <input class="toggle" type="checkbox" v-model="todo.completed">
               <label @dblclick="editTodo(todo)">{{ todo.title }}</label>
@@ -24,7 +24,7 @@
             </div>
             <input class="edit" type="text"
                    v-model="todo.title"
-                   v-todo-focus="todo == editedTodo"
+                   v-todo-focus="todo === editedTodo"
                    @blur="doneEdit(todo)"
                    @keyup.enter="doneEdit(todo)"
                    @keyup.esc="cancelEdit(todo)">
@@ -33,21 +33,21 @@
       </section>
       <footer class="footer" v-show="todos.length" v-cloak>
     <span class="todo-count">
-      <strong>{{ remaining }}</strong> {{ remaining | pluralize }} left
+      <strong>{{ remaining }}</strong> {{ pluralize(remaining) }} left
     </span>
         <ul class="filters">
           <li>
-            <router-link to="/all" :class="{ selected: visibility == 'all' }">
+            <router-link to="/all" :class="{ selected: visibility === 'all' }">
               All
             </router-link>
           </li>
           <li>
-            <router-link to="/active" :class="{ selected: visibility == 'active' }">
+            <router-link to="/active" :class="{ selected: visibility === 'active' }">
               Active
             </router-link>
           </li>
           <li>
-            <router-link to="/completed" :class="{ selected: visibility == 'completed' }">
+            <router-link to="/completed" :class="{ selected: visibility === 'completed' }">
               Completed
             </router-link>
           </li>
@@ -68,10 +68,11 @@
 <script>
 import {
   ref, computed, watch, onMounted,
-} from '@vue/composition-api';
+} from 'vue';
+import { useRoute } from 'vue-router';
 
 // localStorage persistence
-const STORAGE_KEY = 'todos-vuejs-2.0';
+const STORAGE_KEY = 'todos-vuejs-3.0';
 const todoStorage = {
   fetch() {
     const todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -102,11 +103,6 @@ const filters = {
 
 export default {
   name: 'home',
-  filters: {
-    pluralize(n) {
-      return n === 1 ? 'item' : 'items';
-    },
-  },
   directives: {
     // eslint-disable-next-line func-names
     'todo-focus': function (el, binding) {
@@ -115,16 +111,14 @@ export default {
       }
     },
   },
-  // eslint-disable-next-line no-unused-vars
-  setup(props, context) {
-    // reactive state
+  setup() {
+    const route = useRoute();
     const todos = ref(todoStorage.fetch());
     const newTodo = ref('');
     const editedTodo = ref(null);
-    const visibility = ref(context.root.$route.params.type || 'all');
+    const visibility = ref(route.params.type || 'all');
     const beforeEditCache = ref('');
 
-    // computed state
     const filteredTodos = computed(() => filters[visibility.value](todos.value));
     const remaining = computed(() => filters.active(todos.value).length);
     const allDone = computed({
@@ -138,6 +132,8 @@ export default {
     });
 
     // method
+    const pluralize = (n) => (n === 1 ? 'item' : 'items');
+
     const addTodo = () => {
       const value = newTodo.value && newTodo.value.trim();
       if (!value) {
@@ -204,6 +200,7 @@ export default {
       filteredTodos,
       allDone,
       remaining,
+      pluralize,
       addTodo,
       removeTodo,
       editTodo,
