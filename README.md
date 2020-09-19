@@ -3,9 +3,6 @@
 ## Demo
 See [todos](http://project.ifable.cn/todos).
 
-## 基于 composition-api@0.6.7 构建的 Todo App
-
-
 ## Project setup
 ```
 npm install
