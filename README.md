@@ -1,4 +1,4 @@
-# 基于 vue@3.0.4 构建的 Todo App
+# 基于 vue@3.0.11 构建的 Todo App
 
 ## Demo
 See [todos](http://project.ifable.cn/todos).
