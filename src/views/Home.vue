@@ -33,7 +33,7 @@
       </section>
       <footer class="footer" v-show="todos.length" v-cloak>
     <span class="todo-count">
-      <strong>{{ remaining }}</strong> {{ pluralize(remaining) }} left
+      <strong>{{ remaining }}</strong> {{ remaining === 1 ? 'item' : 'items' }} left
     </span>
         <ul class="filters">
           <li>
@@ -59,47 +59,16 @@
     </section>
     <footer class="info">
       <p>Double-click to edit a todo</p>
-      <p>Written by <a href="http://evanyou.me">Evan You</a></p>
-      <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+      <p>Written by <a href="https://evanyou.me">Evan You</a></p>
+      <p>Part of <a href="https://todomvc.com">TodoMVC</a></p>
     </footer>
   </div>
 </template>
 
 <script>
-import {
-  ref, computed, watch, onMounted,
-} from 'vue';
+import { ref } from 'vue';
 import { useRoute } from 'vue-router';
-
-// localStorage persistence
-const STORAGE_KEY = 'todos-vuejs-3.0';
-const todoStorage = {
-  fetch() {
-    const todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    todos.forEach((todo, index) => {
-      // eslint-disable-next-line no-param-reassign
-      todo.id = index;
-    });
-    todoStorage.uid = todos.length;
-    return todos;
-  },
-  save(todos) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-  },
-};
-
-// visibility filters
-const filters = {
-  all(todos) {
-    return todos;
-  },
-  active(todos) {
-    return todos.filter((todo) => !todo.completed);
-  },
-  completed(todos) {
-    return todos.filter((todo) => todo.completed);
-  },
-};
+import useTodos from '../hooks/useTodos';
 
 export default {
   name: 'home',
@@ -113,50 +82,28 @@ export default {
   },
   setup() {
     const route = useRoute();
-    const todos = ref(todoStorage.fetch());
-    const newTodo = ref('');
-    const editedTodo = ref(null);
     const visibility = ref(route.params.type || 'all');
-    const beforeEditCache = ref('');
 
-    const filteredTodos = computed(() => filters[visibility.value](todos.value));
-    const remaining = computed(() => filters.active(todos.value).length);
-    const allDone = computed({
-      get: () => remaining.value === 0,
-      set: (value) => {
-        todos.value.forEach((todo) => {
-          // eslint-disable-next-line no-param-reassign
-          todo.completed = value;
-        });
-      },
-    });
+    const {
+      todos, filteredTodos, remaining, allDone, removeTodo, pushTodo, removeCompleted,
+    } = useTodos({ visibility });
 
-    // method
-    const pluralize = (n) => (n === 1 ? 'item' : 'items');
-
+    const newTodo = ref('');
     const addTodo = () => {
       const value = newTodo.value && newTodo.value.trim();
       if (!value) {
         return;
       }
-      todos.value.push({
-        // eslint-disable-next-line no-plusplus
-        id: todoStorage.uid++,
-        title: value,
-        completed: false,
-      });
+      pushTodo(value);
       newTodo.value = '';
     };
 
-    const removeTodo = (todo) => {
-      todos.value.splice(todos.value.indexOf(todo), 1);
-    };
-
+    const beforeEditCache = ref('');
+    const editedTodo = ref(null);
     const editTodo = (todo) => {
       beforeEditCache.value = todo.title;
       editedTodo.value = todo;
     };
-
     const doneEdit = (todo) => {
       if (!editedTodo.value) {
         return;
@@ -168,45 +115,28 @@ export default {
         removeTodo(todo);
       }
     };
-
     const cancelEdit = (todo) => {
       editedTodo.value = null;
       // eslint-disable-next-line no-param-reassign
       todo.title = beforeEditCache.value;
     };
 
-    const removeCompleted = () => {
-      todos.value = filters.active(todos.value);
-    };
-
-    // watch
-    watch(
-      todos,
-      (val) => {
-        todoStorage.save(val);
-      },
-      { deep: true },
-    );
-    // lifecycle
-    onMounted(() => {
-      // console.log('mounted');
-    });
     // expose bindings on render context
     return {
-      todos,
-      newTodo,
-      editedTodo,
       visibility,
+      todos,
       filteredTodos,
       allDone,
       remaining,
-      pluralize,
-      addTodo,
+      pushTodo,
       removeTodo,
+      removeCompleted,
+      newTodo,
+      addTodo,
+      editedTodo,
       editTodo,
       doneEdit,
       cancelEdit,
-      removeCompleted,
     };
   },
 };
@@ -274,8 +204,6 @@ export default {
     font-weight: 100;
     text-align: center;
     color: rgba(175, 47, 47, 0.15);
-    -webkit-text-rendering: optimizeLegibility;
-    -moz-text-rendering: optimizeLegibility;
     text-rendering: optimizeLegibility;
   }
 
@@ -288,7 +216,6 @@ export default {
     font-family: inherit;
     font-weight: inherit;
     line-height: 1.4em;
-    border: 0;
     color: inherit;
     padding: 6px;
     border: 1px solid #999;
@@ -428,10 +355,9 @@ export default {
     bottom: 0;
     width: 40px;
     height: 40px;
-    margin: auto 0;
     font-size: 30px;
     color: #cc9a9a;
-    margin-bottom: 11px;
+    margin: auto 0 11px;
     transition: color 0.2s ease-out;
   }
 
