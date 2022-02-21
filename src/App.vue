@@ -6,20 +6,20 @@
 
 <script>
 import {
-  computed,
-} from 'vue';
-import { useRoute } from 'vue-router';
+  computed
+} from 'vue'
+import { useRoute } from 'vue-router'
 
 export default {
   name: 'App',
-  setup() {
-    const route = useRoute();
-    const key = computed(() => route.path);
+  setup () {
+    const route = useRoute()
+    const key = computed(() => route.path)
     return {
-      key,
-    };
-  },
-};
+      key
+    }
+  }
+}
 </script>
 
 <style>

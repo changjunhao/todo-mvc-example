@@ -66,9 +66,9 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { useRoute } from 'vue-router';
-import useTodos from '../hooks/useTodos';
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+import useTodos from '../hooks/useTodos'
 
 export default {
   name: 'home',
@@ -76,50 +76,50 @@ export default {
     // eslint-disable-next-line func-names
     'todo-focus': function (el, binding) {
       if (binding.value) {
-        el.focus();
+        el.focus()
       }
-    },
+    }
   },
-  setup() {
-    const route = useRoute();
-    const visibility = ref(route.params.type || 'all');
+  setup () {
+    const route = useRoute()
+    const visibility = ref(route.params.type || 'all')
 
     const {
-      todos, filteredTodos, remaining, allDone, removeTodo, pushTodo, removeCompleted,
-    } = useTodos({ visibility });
+      todos, filteredTodos, remaining, allDone, removeTodo, pushTodo, removeCompleted
+    } = useTodos({ visibility })
 
-    const newTodo = ref('');
+    const newTodo = ref('')
     const addTodo = () => {
-      const value = newTodo.value && newTodo.value.trim();
+      const value = newTodo.value && newTodo.value.trim()
       if (!value) {
-        return;
+        return
       }
-      pushTodo(value);
-      newTodo.value = '';
-    };
+      pushTodo(value)
+      newTodo.value = ''
+    }
 
-    const beforeEditCache = ref('');
-    const editedTodo = ref(null);
+    const beforeEditCache = ref('')
+    const editedTodo = ref(null)
     const editTodo = (todo) => {
-      beforeEditCache.value = todo.title;
-      editedTodo.value = todo;
-    };
+      beforeEditCache.value = todo.title
+      editedTodo.value = todo
+    }
     const doneEdit = (todo) => {
       if (!editedTodo.value) {
-        return;
+        return
       }
-      editedTodo.value = null;
+      editedTodo.value = null
       // eslint-disable-next-line no-param-reassign
-      todo.title = todo.title.trim();
+      todo.title = todo.title.trim()
       if (!todo.title) {
-        removeTodo(todo);
+        removeTodo(todo)
       }
-    };
+    }
     const cancelEdit = (todo) => {
-      editedTodo.value = null;
+      editedTodo.value = null
       // eslint-disable-next-line no-param-reassign
-      todo.title = beforeEditCache.value;
-    };
+      todo.title = beforeEditCache.value
+    }
 
     // expose bindings on render context
     return {
@@ -136,10 +136,10 @@ export default {
       editedTodo,
       editTodo,
       doneEdit,
-      cancelEdit,
-    };
-  },
-};
+      cancelEdit
+    }
+  }
+}
 </script>
 
 <style lang="css" scoped>

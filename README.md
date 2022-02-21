@@ -1,4 +1,4 @@
-# 基于 vue@3.2.30 构建的 Todo App
+# 基于 vue@3.2.31 构建的 Todo App
 
 ## Demo
 See [todos](http://project.ifable.cn/todos).
@@ -23,5 +23,8 @@ npm run build
 npm run lint
 ```
 
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
+
 ### Doc
-See [vue-next](https://github.com/vuejs/vue-next).
+See [vue-core](https://github.com/vuejs/core).
